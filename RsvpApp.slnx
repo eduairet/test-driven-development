@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RsvpApp.Core.Tests/RsvpApp.Core.Tests.csproj" />
+  <Project Path="RsvpApp.Core/RsvpApp.Core.csproj" Id="c00ab6b0-6952-4a5f-86f7-865d2204bbd3" />
+</Solution>
