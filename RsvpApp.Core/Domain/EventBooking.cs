@@ -1,6 +1,8 @@
-﻿namespace RsvpApp.Core.Models;
+﻿using RsvpApp.Core.Models;
 
-public class EventBookingResult
+namespace RsvpApp.Core.Domain;
+
+public class EventBooking
 {
     public Guid Id { get; set; }
     public DateTime CreatedDate { get; set; }
@@ -9,5 +11,5 @@ public class EventBookingResult
     public string Email { get; set; }
     public string EventName { get; set; }
     public DateTime EventTime { get; set; }
-    public EventType EventType { get; set; }
+    public EventType Type { get; set; }
 }
