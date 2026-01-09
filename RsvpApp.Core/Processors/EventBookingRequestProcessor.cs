@@ -1,32 +1,45 @@
 ﻿using RsvpApp.Core.Domain;
+using RsvpApp.Core.Enums;
 using RsvpApp.Core.Models;
 using RsvpApp.Core.Services;
 
 namespace RsvpApp.Core.Processors;
 
-public class EventBookingRequestProcessor
+public class EventBookingRequestProcessor(IEventBookingService eventBookingService, List<Event> events)
 {
-    private IEventBookingService @object;
+    private readonly IEventBookingService eventBookingService = eventBookingService;
+    private readonly List<Event> _events = events;
 
-    public EventBookingRequestProcessor(IEventBookingService @object)
-    {
-        this.@object = @object;
-    }
-
-    public EventBooking BookEvent(EventBookingRequest request)
+    public EventBookingResult BookEvent(EventBookingRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return new EventBooking
+        var result = MapRequestToResult<EventBookingResult>(request);
+        result.Id = Guid.NewGuid();
+
+        var evt = _events.FirstOrDefault(e => e.Id == request.EventId);
+        if (eventBookingService.GetEventAvailability(request.EventId))
         {
-            Id = Guid.NewGuid(),
-            CreatedDate = DateTime.Now,
-            UpdatedDate = DateTime.Now,
-            FullName = request.FullName,
+            eventBookingService.Save(result);
+            result.SuccessFlag = BookingSuccessFlag.Success;
+            evt.Count++;
+        }
+        else
+        {
+            result.SuccessFlag = BookingSuccessFlag.Failed;
+        }
+
+        return result;
+    }
+
+    private static TEventBooking MapRequestToResult<TEventBooking>(EventBookingRequest request) where TEventBooking : EventBookingBase, new()
+    {
+        return new TEventBooking
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             Email = request.Email,
-            EventName = request.EventName,
-            EventTime = request.EventTime,
-            Type = request.EventType,
+            EventId = request.EventId
         };
     }
 }
